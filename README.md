@@ -1,6 +1,6 @@
 ![EZ Drag n' Drop](logo.png)
 
-v. 0.0.2
+v. 0.0.3
 
 EZ Drag n' Drop is a Javascript library that makes it easy for users to drag and drop to reposition elements in the DOM.
 

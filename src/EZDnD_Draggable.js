@@ -1,8 +1,8 @@
 
+
 /**
  * Class to enable dragging and dropping of DOM elements.
  * @see https://pamblam.github.io/ez-drag-n-drop/examples/
- * @version {{ VERSION }}
  */
 class EZDnD_Draggable{
 	
@@ -154,9 +154,11 @@ class EZDnD_Draggable{
 	onMouseRelease(){
 		if(this.isDragging){
 			if(this.newElementPosition){
-				this.element.dispatchEvent(new Event('dnd-completed'));
+				var event = new CustomEvent('dnd-completed', {detail: this, bubbles: true});
+				this.element.dispatchEvent(event);
 			}else{
-				this.element.dispatchEvent(new Event('dnd-canceled'));
+				var event = new CustomEvent('dnd-canceled', {detail: this, bubbles: true});
+				this.element.dispatchEvent(event);
 			}
 		}
 		
@@ -188,7 +190,8 @@ class EZDnD_Draggable{
 		this.cssDisplayValue = this.element.style.display || null;
 		this.element.style.display = 'none';
 		document.body.style.cursor = 'grabbing';
-		this.element.dispatchEvent(new Event('dnd-started'));
+		var event = new CustomEvent('dnd-started', {detail: this, bubbles: true});
+		this.element.dispatchEvent(event);
 	}
 	
 	/**
@@ -271,7 +274,8 @@ class EZDnD_Draggable{
 	 */
 	onMouseMove(e){
 		if(this.isDragging === false) return;
-		this.element.dispatchEvent(new Event('dnd-dragging'));
+		var event = new CustomEvent('dnd-dragging', {detail: this, bubbles: true});
+		this.element.dispatchEvent(event);
 		this.currentAbsPos = {
 			x: e.pageX-this.mouseOffset.x, 
 			y: e.pageY-this.mouseOffset.y

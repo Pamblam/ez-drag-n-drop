@@ -2,7 +2,6 @@
 /**
  * Convenience class for handling groups of draggables
  * @see https://pamblam.github.io/ez-drag-n-drop/examples/
- * @version {{ VERSION }}
  */
 class EZDnD_Group{
 	

@@ -3,55 +3,98 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<link rel="stylesheet" href="https://rockwell.ourtownamerica.com/intra/common/bootstrap-4.5/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://rockwell.ourtownamerica.com/intra/common/css/ot-bs4-styles.css">
-		<title>Our Town, Inc. IntraNet</title>
+		<link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css'>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<title>Drag n' Drop Example</title>
+		
+		<style>
+			.draggable{
+				margin: .2em;
+			}
+			
+			.dnd-container{
+				border: 2px dashed black;
+				min-height: 1em;
+			}
+		</style>
+		
 	</head>
-	<body style="width: 110vw; height: 110vh;">
+	<body>
 		<div class="container">
 			<br><br>
 			
+			<h1>Drag n' Drop Demo</h1>
+			
+			<p>Use the <i class="fas fa-dot-circle"></i> icon to grab artists and drag them to the different categories.</p>
+			
 			<div class="card">
 				<div class="card-header d-flex justify-content-between align-items-center">
-					Graphics Job
-					<span class="job-action-buttons float-right"><a class="btn btn-sm btn-primary status-progress-button" href="#">Mark as Ready for Review</a></span>
+					Artists
 				</div>
 				<div class="card-body">
-					<div class="row" id="drag_container">
-						<div class="col col1">
-							<div class="job-display-item"><b>Job ID: </b><span id="job-id-display">000022</span></div>
-							<div class="job-display-item"><b>Status: </b><span id="job-status-display"><b>In Progress</b></span></div>
-							<div class="job-display-item"><b>Assets: </b><span id="job-ntoes-overview-display"><a data-open-tab="ga-job-assets-details" href="#"><i>No files attached to this job</i></a></span></div>
-							<div class="job-display-item"><b>Old Tagline: </b><small style="font-family: monospace;"><span id="job-old-tagline-display">COFL/050857/0905/12/SFDU/0120/SP-1/1/M/</span></small></div>
-							<div class="job-display-item"><b>New Tagline: </b><small style="font-family: monospace;"><span id="job-new-tagline-display">COFL/050857/0905/12/SFDU/0121/GC-1/0/0/</span></small></div>
+					<div class="row dnd-container" data-label='Unlabeled'>
+						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Elvis</span>
+						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Bob Dylan</span>
+						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Eminem</span>
+						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Elton John</span>
+						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Modanna</span>
+					</div>
+				</div>
+			</div>
+			<br><Br>
+			<div class='row'>
+				<div class='col'>
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							Good Music
 						</div>
-						<div class="col col2">
-							<div class="job-display-item"><b>Source: </b><span id="job-source-display">GA</span></div>
-							<div class="job-display-item"><b>Created By: </b><span id="job-creator-display">Jason Strickland</span></div>
-							<div class="job-display-item"><b>Version: </b><span id="job-version-display">Unversioned</span></div>
-							<div class="job-display-item"><b>Assigned To: </b><span id="job-notes-assigned-to-display">Robert Parham</span></div>
-							<div class="job-display-item"><b>Sponsor: </b><span id="job-sponsor-overview-display"><a data-open-tab="ga-job-sponsor-details" href="#">Cristys Pizza Inc</a></span></div>
+						<div class="card-body">
+							<div class="row container dnd-container" data-label='Good Music'>
+								
+							</div>
 						</div>
-						<div class="col col3">
-							<div class="job-display-item"><b>Type: </b><span id="job-type-display">CERT</span></div>
-							<div class="job-display-item"><b>Layout: </b><span id="job-layout-display"><a href="#" id="trigger-layout-edit-modal">GC-1/0</a></span></div>
-							<div class="job-display-item"><b>Mail Month: </b><span id="job-mailmonth-display"><a href="#" id="trigger-mailmonth-edit-modal">Jan. '21</a></span></div>
-							<div class="job-display-item"><b>Notes: </b><span id="job-notes-overview-display"><a data-open-tab="ga-job-notes-details" href="#"><i>2 notes on this job</i></a></span></div>
-							<div class="job-display-item"><b>Danger Zone: </b><span id="job-delete-job-admin-container"><a id="job-delete-job-admin-btn" href="#"><i>Permanently delete this job</i></a></span></div>
+					</div>
+				</div>
+				<div class='col'>
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							Bad Music
+						</div>
+						<div class="card-body">
+							<div class="row container dnd-container" data-label='Bad Music'>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='col'>
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							Terrible Music
+						</div>
+						<div class="card-body">
+							<div class="row container dnd-container" data-label='Terrible Music'>
+								
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			
+			
 		</div>
-		<script src="https://rockwell.ourtownamerica.com/intra/common/js/jquery-3.5.1.min.js"></script>
-		<script src="https://rockwell.ourtownamerica.com/intra/common/js/popper-1.12.5.min.js"></script>
-		<script src="https://rockwell.ourtownamerica.com/intra/common/bootstrap-4.5/js/bootstrap.min.js"></script>
-		<script src="DragNDrop.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		<script src="../ez-drag-n-drop.js"></script>
 		
 		<script>		
 		
-			var dnd = new DND_Group('.job-display-item', 'b', '#drag_container .col', '<div>&rarr;</div>');
+			var dnd = new EZDnD_Group('.draggable', '.fas', '.dnd-container', '<div>&rarr;</div>');
+		
+			document.addEventListener('dnd-completed', function(e){
+				console.log(e.target);
+			});
 		
 		</script>
 	</body>

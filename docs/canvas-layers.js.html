@@ -30,7 +30,7 @@
           </header>
           <article>
             <pre class="prettyprint linenums"><code>/**
- * ez-drag-n-drop - v0.0.2
+ * ez-drag-n-drop - v0.0.3
  * Simple plugin to allow users to drag and drop to rearrange elements in the DOM.
  * @author Pamblam
  * @website 
@@ -38,10 +38,10 @@
  */
 
 
+
 /**
  * Class to enable dragging and dropping of DOM elements.
  * @see https://pamblam.github.io/ez-drag-n-drop/examples/
- * @version 0.0.2
  */
 class EZDnD_Draggable{
 	
@@ -193,9 +193,11 @@ class EZDnD_Draggable{
 	onMouseRelease(){
 		if(this.isDragging){
 			if(this.newElementPosition){
-				this.element.dispatchEvent(new Event(&#x27;dnd-completed&#x27;));
+				var event &#x3D; new CustomEvent(&#x27;dnd-completed&#x27;, {detail: this, bubbles: true});
+				this.element.dispatchEvent(event);
 			}else{
-				this.element.dispatchEvent(new Event(&#x27;dnd-canceled&#x27;));
+				var event &#x3D; new CustomEvent(&#x27;dnd-canceled&#x27;, {detail: this, bubbles: true});
+				this.element.dispatchEvent(event);
 			}
 		}
 		
@@ -227,7 +229,8 @@ class EZDnD_Draggable{
 		this.cssDisplayValue &#x3D; this.element.style.display || null;
 		this.element.style.display &#x3D; &#x27;none&#x27;;
 		document.body.style.cursor &#x3D; &#x27;grabbing&#x27;;
-		this.element.dispatchEvent(new Event(&#x27;dnd-started&#x27;));
+		var event &#x3D; new CustomEvent(&#x27;dnd-started&#x27;, {detail: this, bubbles: true});
+		this.element.dispatchEvent(event);
 	}
 	
 	/**
@@ -310,7 +313,8 @@ class EZDnD_Draggable{
 	 */
 	onMouseMove(e){
 		if(this.isDragging &#x3D;&#x3D;&#x3D; false) return;
-		this.element.dispatchEvent(new Event(&#x27;dnd-dragging&#x27;));
+		var event &#x3D; new CustomEvent(&#x27;dnd-dragging&#x27;, {detail: this, bubbles: true});
+		this.element.dispatchEvent(event);
 		this.currentAbsPos &#x3D; {
 			x: e.pageX-this.mouseOffset.x, 
 			y: e.pageY-this.mouseOffset.y
@@ -400,7 +404,6 @@ class EZDnD_Draggable{
 /**
  * Convenience class for handling groups of draggables
  * @see https://pamblam.github.io/ez-drag-n-drop/examples/
- * @version 0.0.2
  */
 class EZDnD_Group{
 	
