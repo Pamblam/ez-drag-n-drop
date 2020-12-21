@@ -152,15 +152,8 @@ class EZDnD_Draggable{
 	 * @ignore
 	 */
 	onMouseRelease(){
-		if(this.isDragging){
-			if(this.newElementPosition){
-				var event = new CustomEvent('dnd-completed', {detail: this, bubbles: true});
-				this.element.dispatchEvent(event);
-			}else{
-				var event = new CustomEvent('dnd-canceled', {detail: this, bubbles: true});
-				this.element.dispatchEvent(event);
-			}
-		}
+		var wasDragging = !!this.isDragging;
+		var wasMoved = !!this.newElementPosition;
 		
 		this.isDragging = false;
 		if(this.elementClone) this.elementClone.remove();
@@ -176,6 +169,16 @@ class EZDnD_Draggable{
 		this.anchor.style.cursor = this.anchorCursor;
 		this.newElementPosition = null;
 		this.element.style.display = this.cssDisplayValue;
+		
+		if(wasDragging){ 
+			if(wasMoved){
+				var event = new CustomEvent('dnd-completed', {detail: this, bubbles: true});
+				this.element.dispatchEvent(event);
+			}else{
+				var event = new CustomEvent('dnd-canceled', {detail: this, bubbles: true});
+				this.element.dispatchEvent(event);
+			}
+		}
 	}
 	
 	/**

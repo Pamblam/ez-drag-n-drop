@@ -1,6 +1,6 @@
 {
   "name": "ez-drag-n-drop",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Simple plugin to allow users to drag and drop to rearrange elements in the DOM.",
   "main": "ez-drag-n-drop.js",
   "scripts": {

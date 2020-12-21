@@ -93,7 +93,9 @@
 			var dnd = new EZDnD_Group('.draggable', '.fas', '.dnd-container', '<div>&rarr;</div>');
 		
 			document.addEventListener('dnd-completed', function(e){
-				console.log(e.target);
+				var label = e.target.parentElement.getAttribute('data-label');
+				var artist = e.target.innerText.trim();
+				alert(`${artist} labelled as ${label}.`);
 			});
 		
 		</script>
