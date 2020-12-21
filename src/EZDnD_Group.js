@@ -11,7 +11,7 @@ class EZDnD_Group{
 	 * @param {String} element_selectors - CSS Selector representing all draggable elements
 	 * @param {String} anchor_selectors - CSS Selector representing handles in each of the draggable elements
 	 * @param {String} container_selectors - CSS Selector representing all areas in which elements may be dropped
-	 * @param {HTM String|HTMLElement|null} placeholder - If provided, serves as a placeholder to show where a dropped element will land.
+	 * @param {HTMLElement|null} placeholder - If provided, serves as a placeholder to show where a dropped element will land.
 	 * @returns {EZDnD_Group}
 	 */
 	constructor(element_selectors, anchor_selectors, container_selectors, placeholder=null){

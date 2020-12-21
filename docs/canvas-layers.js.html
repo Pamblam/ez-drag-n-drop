@@ -1,0 +1,465 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Source: canvas-layers.js</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-banner" role="banner">
+        </div>
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <h1>Source: canvas-layers.js</h1>
+          </header>
+          <article>
+            <pre class="prettyprint linenums"><code>/**
+ * ez-drag-n-drop - v0.0.2
+ * Simple plugin to allow users to drag and drop to rearrange elements in the DOM.
+ * @author Pamblam
+ * @website 
+ * @license MIT
+ */
+
+
+/**
+ * Class to enable dragging and dropping of DOM elements.
+ * @see https://pamblam.github.io/ez-drag-n-drop/examples/
+ * @version 0.0.2
+ */
+class EZDnD_Draggable{
+	
+	/**
+	 * Create new interface for making DOM elements draggable.
+	 * @param {HTMLElement} element - The element that should be draggable.
+	 * @param {HTMLElement} anchor - An Element inside the draggable element that is the handle to drag the draggable element.
+	 * @param {HTMLElement[]} containers - Array of HTMLElements which draggables may be dropped into, as top level children of these elements. 
+	 * @param {HTMLElement|null} placeholder - If provided, serves as a placeholder to show where a dropped element will land.
+	 * @returns {EZDnD_Draggable}
+	 */
+	constructor(element, anchor, containers, placeholder&#x3D;null){
+		this.element &#x3D; element;
+		this.anchor &#x3D; anchor;
+		this.containers &#x3D; Array.isArray(containers) ? containers : [containers];
+		this.placeholder &#x3D; this.normalizePlaceholderInput(placeholder);
+		this.validateClassParameters();
+		
+		this.isDragging &#x3D; false;
+		this.elementClone &#x3D; false;
+		this.mouseOffset &#x3D; {x:0, y:0};
+		this.cssDisplayValue &#x3D; this.element.style.display || null;
+		this.anchorCursor &#x3D; this.anchor.style.cursor || null;
+		this.bodyCursor &#x3D; document.body.style.cursor || null;
+		this.currentAbsPos &#x3D; {x:0, y:0};
+		this.newElementPosition &#x3D; null;
+		
+		// Bound events
+		this.boundOnAnchorMousedown &#x3D; this.onAnchorMousedown.bind(this);
+		this.boundOnMouseReleasethis &#x3D; this.onMouseRelease.bind(this);
+		this.boundOnMouseMove &#x3D; this.onMouseMove.bind(this);
+		this.boundOnMouseOverAnchor &#x3D; this.onMouseOverAnchor.bind(this);
+		this.boundOnMouseOutAnchor &#x3D; this.onMouseOutAnchor.bind(this);
+		
+		// Attach listeners
+		this.bind();
+	}
+	
+	/**
+	 * Unbinds all events and resets the DOM so that the instance can be garbage collected. Synonym for unbind();
+	 * @returns {undefined}
+	 */
+	destroy(){
+		this.unbind();
+	}
+	
+	/**
+	 * Unbinds all events and resets the DOM so that the instance can be garbage collected. Synonym for destroy();
+	 * @returns {undefined}
+	 */
+	unbind(){
+		this.anchor.removeEventListener(&#x27;mousedown&#x27;, this.boundOnAnchorMousedown);
+		document.removeEventListener(&#x27;mouseup&#x27;, this.boundOnMouseReleasethis);
+		document.removeEventListener(&#x27;mousemove&#x27;, this.boundOnMouseMove);
+		this.anchor.removeEventListener(&#x27;mouseover&#x27;, this.boundOnMouseOverAnchor);
+		this.anchor.removeEventListener(&#x27;mouseout&#x27;, this.boundOnMouseOutAnchor);
+		this.onMouseRelease();
+	}
+	
+	/**
+	 * Binds events to the elements. This is called on construct, but if you unbind() or destroy(), you can re-bind with this method.
+	 * @returns {undefined}
+	 */
+	bind(){
+		this.anchor.addEventListener(&#x27;mousedown&#x27;, this.boundOnAnchorMousedown);
+		document.addEventListener(&#x27;mouseup&#x27;, this.boundOnMouseReleasethis);
+		document.addEventListener(&#x27;mousemove&#x27;, this.boundOnMouseMove);
+		this.anchor.addEventListener(&#x27;mouseover&#x27;, this.boundOnMouseOverAnchor);
+		this.anchor.addEventListener(&#x27;mouseout&#x27;, this.boundOnMouseOutAnchor);
+	}
+	
+	/**
+	 * Ensure placeholder is a HTMLElement or null.
+	 * @ignore
+	 */
+	normalizePlaceholderInput(placeholder){
+		if(placeholder instanceof HTMLElement) return placeholder;
+		if(typeof placeholder &#x3D;&#x3D;&#x3D; &#x27;string&#x27;){
+			var d &#x3D; document.createElement(&#x27;div&#x27;);
+			d.innerHTML &#x3D; placeholder;
+			var children &#x3D; [...d.children];
+			if(children.length) return children[0];
+			return null;
+		}
+		return null;
+	}
+	
+	/**
+	 * Change the cursor on mouseover of the anchor.
+	 * @ignore
+	 */
+	onMouseOverAnchor(){
+		this.anchor.style.cursor &#x3D; &#x27;grab&#x27;;
+	}
+	
+	/**
+	 * Reset the cursor on mouseout of the anchor.
+	 * @ignore
+	 */
+	onMouseOutAnchor(){
+		this.anchor.style.cursor &#x3D; this.anchorCursor;
+	}
+	
+	/**
+	 * Validate the constructor parameters.
+	 * @ignore
+	 */
+	validateClassParameters(){
+		// Ensure anchor, element are HTMLElements
+		[&#x27;element&#x27;, &#x27;anchor&#x27;].forEach(node&#x3D;&gt;{
+			if(!(this[node] instanceof HTMLElement)){
+				throw new Error(node+&quot; must be instance of HTMLElement&quot;);
+			}
+		});
+		// Ensure all containers are HTMLElements
+		this.containers.forEach(container&#x3D;&gt;{
+			if(!(container instanceof HTMLElement)){
+				throw new Error(&quot;containers must be instances of HTMLElement&quot;);
+			}
+		});
+		// Ensure Element is in a continaer
+		if(!this.isInContainer(this.element)){
+			throw new Error(&quot;element must be contained within container.&quot;);
+		}
+		// Ensure anchor is within element
+		if(!this.element.contains(this.anchor)){
+			throw new Error(&quot;anchor must be contained within element.&quot;);
+		}
+	}
+	
+	/**
+	 * Is the element in a container.
+	 * @ignore
+	 */
+	isInContainer(element){
+		var isElementInContainer &#x3D; false;
+		this.containers.forEach(container&#x3D;&gt;{
+			if(container.contains(element)){
+				isElementInContainer &#x3D; true;
+			}
+		});
+		return isElementInContainer;
+	}
+	
+	/**
+	 * Handle mouseup event.
+	 * @ignore
+	 */
+	onMouseRelease(){
+		if(this.isDragging){
+			if(this.newElementPosition){
+				this.element.dispatchEvent(new Event(&#x27;dnd-completed&#x27;));
+			}else{
+				this.element.dispatchEvent(new Event(&#x27;dnd-canceled&#x27;));
+			}
+		}
+		
+		this.isDragging &#x3D; false;
+		if(this.elementClone) this.elementClone.remove();
+		this.mouseOffset &#x3D; {x:0, y:0};
+		this.currentAbsPos &#x3D; {x:0, y:0};
+		
+		if(this.newElementPosition){
+			this.newElementPosition.ele.insertAdjacentElement(this.newElementPosition.pos, this.element);
+			if(this.placeholder) this.placeholder.remove();
+		}
+		
+		document.body.style.cursor &#x3D; this.bodyCursor;
+		this.anchor.style.cursor &#x3D; this.anchorCursor;
+		this.newElementPosition &#x3D; null;
+		this.element.style.display &#x3D; this.cssDisplayValue;
+	}
+	
+	/**
+	 * Handle mouse down event.
+	 * @ignore
+	 */
+	onAnchorMousedown(e){
+		e.preventDefault();
+		this.isDragging &#x3D; true;
+		this.calculateMouseOffset(e);
+		this.elementClone &#x3D; this.cloneElement();
+		this.cssDisplayValue &#x3D; this.element.style.display || null;
+		this.element.style.display &#x3D; &#x27;none&#x27;;
+		document.body.style.cursor &#x3D; &#x27;grabbing&#x27;;
+		this.element.dispatchEvent(new Event(&#x27;dnd-started&#x27;));
+	}
+	
+	/**
+	 * Get the new position of the dragging element.
+	 * @ignore
+	 */
+	getNewElementPosition(){
+		var container &#x3D; null;
+		var eleCenter &#x3D; this.calculateElementCenterPos(this.elementClone);
+		
+		this.containers.forEach(c&#x3D;&gt;{
+			var {top, left, right, bottom} &#x3D; c.getBoundingClientRect();
+			top +&#x3D; scrollY;
+			bottom +&#x3D; scrollY;
+			left +&#x3D; scrollX;
+			right +&#x3D; scrollX;
+			
+			const isVerticallyIncontainer &#x3D; eleCenter.x &gt;&#x3D; left &amp;amp;&amp;amp; eleCenter.x &amp;lt;&#x3D; right;
+			const isHorizontallyInContainer &#x3D; eleCenter.y &gt;&#x3D; top &amp;amp;&amp;amp; eleCenter.y &amp;lt;&#x3D; bottom;
+			if(isVerticallyIncontainer &amp;amp;&amp;amp; isHorizontallyInContainer){
+				container &#x3D; c;
+			}
+		});
+		
+		if(!container) return null;
+		var children &#x3D; [...container.children];
+		
+		// if there are no children
+		if(!children.length){
+			return {pos: &#x27;afterbegin&#x27;, ele: container};
+		}
+		
+		// Get the closest element, it&#x27;s distance, and the position
+		var position, element, distance;
+		
+		children.forEach(child&#x3D;&gt;{
+			var posit &#x3D; null;
+			var pos &#x3D; this.calculateElementCenterPos(child);
+			var d &#x3D; Math.hypot(pos.x-eleCenter.x, pos.y-eleCenter.y);
+			if(eleCenter.y &amp;lt; pos.y){
+				// it&#x27;s above
+				posit &#x3D; &#x27;beforebegin&#x27;;
+			}else if(eleCenter.y &gt; pos.y){
+				// it&#x27;s below
+				posit &#x3D; &#x27;afterend&#x27;;
+			}else if(eleCenter.x &gt; pos.x){
+				// it&#x27;s to the right
+				posit &#x3D; &#x27;afterend&#x27;;
+			}else{
+				// it&#x27;s to the left
+				posit &#x3D; &#x27;beforebegin&#x27;;
+			}
+			if(!distance || d &amp;lt; distance){
+				distance &#x3D; d;
+				element &#x3D; child;
+				position &#x3D; posit;
+			}
+		});
+		
+		return {pos: position, ele: element};
+	}
+	
+	/**
+	 * Calculate the center of a DOM element.
+	 * @ignore
+	 */
+	calculateElementCenterPos(element){
+		var {top, left, width, height} &#x3D; element.getBoundingClientRect();
+		top +&#x3D; scrollY;
+		left +&#x3D; scrollX;
+		return {
+			x: left + (width / 2),
+			y: top + (height / 2)
+		};
+	}
+	
+	/**
+	 * Handle mouse move event.
+	 * @ignore
+	 */
+	onMouseMove(e){
+		if(this.isDragging &#x3D;&#x3D;&#x3D; false) return;
+		this.element.dispatchEvent(new Event(&#x27;dnd-dragging&#x27;));
+		this.currentAbsPos &#x3D; {
+			x: e.pageX-this.mouseOffset.x, 
+			y: e.pageY-this.mouseOffset.y
+		};
+		this.elementClone.style.top &#x3D; this.currentAbsPos.y+&quot;px&quot;;
+		this.elementClone.style.left &#x3D; this.currentAbsPos.x+&quot;px&quot;;
+		
+		this.newElementPosition &#x3D; this.getNewElementPosition(e);
+		if(this.placeholder){
+			if(this.newElementPosition){
+				this.newElementPosition.ele.insertAdjacentElement(this.newElementPosition.pos, this.placeholder);
+			}else{
+				this.placeholder.remove();
+			}
+		}
+	}
+	
+	/**
+	 * Calculate mouse offset.
+	 * @ignore
+	 */
+	calculateMouseOffset(e){
+		var rect &#x3D; this.element.getBoundingClientRect();
+		var x &#x3D; e.pageX - (rect.left + scrollX); //x position within the element.
+		var y &#x3D; e.pageY - (rect.top + scrollY);
+		this.mouseOffset &#x3D; {x, y};
+	}
+	
+	/**
+	 * Clone the main element.
+	 * @ignore
+	 */
+	cloneElement(){
+		const getRealStyle &#x3D; (element, style) &#x3D;&gt; {
+			var computedStyle &#x3D; typeof element.currentStyle &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27; ? 
+				document.defaultView.getComputedStyle(element, null) :
+				element.currentStyle ;
+			return style ? computedStyle[style] : computedStyle;
+		};
+		
+		const copyComputedStyle &#x3D; (src, dest) &#x3D;&gt; {
+			var s &#x3D; getRealStyle(src);
+			for (var i in s) {
+				if (typeof i &#x3D;&#x3D;&#x3D; &quot;string&quot; &amp;amp;&amp;amp; i !&#x3D;&#x3D; &quot;cssText&quot; &amp;amp;&amp;amp; !/\d/.test(i)) {
+					try {
+						dest.style[i] &#x3D; s[i];
+						// &#x60;fontSize&#x60; comes before &#x60;font&#x60; If &#x60;font&#x60; is empty, &#x60;fontSize&#x60; gets
+						// overwritten.  So make sure to reset this property. (hackyhackhack)
+						// Other properties may need similar treatment
+						if (i &#x3D;&#x3D; &quot;font&quot;) {
+							dest.style.fontSize &#x3D; s.fontSize;
+						}
+					} catch (e) {}
+				}
+			}
+		};
+		
+		var clone &#x3D; this.element.cloneNode(true);
+		document.body.append(clone);
+		
+		copyComputedStyle(this.element, clone);
+		
+		const srcElements &#x3D; this.element.getElementsByTagName(&#x27;*&#x27;);
+		const dstElements &#x3D; clone.getElementsByTagName(&#x27;*&#x27;);
+		
+		for (let i &#x3D; srcElements.length; i--;) {
+			const srcElement &#x3D; srcElements[i];
+			const dstElement &#x3D; dstElements[i];
+			copyComputedStyle(srcElement, dstElement);
+		}
+		
+		var pos &#x3D; this.element.getBoundingClientRect();
+		this.currentAbsPos &#x3D; {
+			x:pos.left + scrollX, 
+			y:pos.top + scrollY
+		};
+		
+		clone.style.position &#x3D; &#x27;absolute&#x27;;
+		clone.style.top &#x3D; this.currentAbsPos.y+&quot;px&quot;;
+		clone.style.left &#x3D; this.currentAbsPos.x+&quot;px&quot;;
+		
+		return clone;
+	}
+	
+}
+
+/**
+ * Convenience class for handling groups of draggables
+ * @see https://pamblam.github.io/ez-drag-n-drop/examples/
+ * @version 0.0.2
+ */
+class EZDnD_Group{
+	
+	/**
+	 * Greate a group of draggable elements
+	 * @param {String} element_selectors - CSS Selector representing all draggable elements
+	 * @param {String} anchor_selectors - CSS Selector representing handles in each of the draggable elements
+	 * @param {String} container_selectors - CSS Selector representing all areas in which elements may be dropped
+	 * @param {HTMLElement|null} placeholder - If provided, serves as a placeholder to show where a dropped element will land.
+	 * @returns {EZDnD_Group}
+	 */
+	constructor(element_selectors, anchor_selectors, container_selectors, placeholder&#x3D;null){
+		this.draggables &#x3D; [];
+		const containers &#x3D; [...document.querySelectorAll(container_selectors)];
+		[...document.querySelectorAll(element_selectors)].forEach(element&#x3D;&gt;{
+			const anchor &#x3D; element.querySelector(anchor_selectors);
+			this.draggables.push(new EZDnD_Draggable(element, anchor, containers, placeholder));
+		});
+	}
+	
+	/**
+	 * Unbinds all events and resets the DOM so that the instance can be garbage collected. Synonym for unbind();
+	 * @returns {undefined}
+	 */
+	destroy(){
+		this.unbind();
+	}
+	
+	/**
+	 * Unbinds all events and resets the DOM so that the instance can be garbage collected. Synonym for destroy();
+	 * @returns {undefined}
+	 */
+	unbind(){
+		this.draggables.forEach(draggable&#x3D;&gt;draggable.unbind());
+	}
+	
+}
+
+</code></pre>
+          </article>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on December 21, 2020.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/jquery.cookie.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>
