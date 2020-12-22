@@ -30,7 +30,7 @@
           </header>
           <article>
             <pre class="prettyprint linenums"><code>/**
- * ez-drag-n-drop - v0.0.6
+ * ez-drag-n-drop - v1.0.19
  * Simple plugin to allow users to drag and drop to rearrange elements in the DOM.
  * @author Pamblam
  * @website 
@@ -47,19 +47,27 @@ class EZDnD_Draggable{
 	
 	/**
 	 * Create new interface for making DOM elements draggable.
-	 * @param {HTMLElement} element - The element that should be draggable.
-	 * @param {HTMLElement} anchor - An Element inside the draggable element that is the handle to drag the draggable element.
-	 * @param {HTMLElement[]} containers - Array of HTMLElements which draggables may be dropped into, as top level children of these elements. 
-	 * @param {HTMLElement|null} placeholder - If provided, serves as a placeholder to show where a dropped element will land.
+	 * @param {HTMLElement} [options.element] - The element that should be draggable.
+	 * @param {HTMLElement} [options.anchor] - An Element inside the draggable element that is the handle to drag the draggable element. If not provided, the entire elemenet is the anchor.
+	 * @param {HTMLElement[]} [options.containers] - Array of HTMLElements which draggables may be dropped into, as top level children of these elements. If not provided, the element is draggable only within it&#x27;s immediate ancestor.
+	 * @param {HTMLElement|null} [options.placeholder] - If provided, serves as a placeholder to show where a dropped element will land.
+	 * @param {String} [options.dragging_class] - If provided this class will be added to any elements as they are being dragged.
+	 * @param {String} [options.hovering_class] - If provided this class will be added to any containers as they are being hovered over with a dragged element.
 	 * @returns {EZDnD_Draggable}
 	 */
-	constructor(element, anchor, containers, placeholder&#x3D;null){
-		this.element &#x3D; element;
-		this.anchor &#x3D; anchor;
-		this.containers &#x3D; Array.isArray(containers) ? containers : [containers];
-		this.placeholder &#x3D; this.normalizePlaceholderInput(placeholder);
+	constructor(options){
+		
+		// handle options/parameters
+		this.element &#x3D; options.element;
+		this.anchor &#x3D; options.anchor || options.element;
+		if(!options.containers) options.containers &#x3D; options.element.parentElement;
+		this.containers &#x3D; Array.isArray(options.containers) ? options.containers : [options.containers];
+		this.placeholder &#x3D; this.normalizePlaceholderInput(options.placeholder);
+		this.dragging_class &#x3D; options.dragging_class || undefined;
+		this.hovering_class &#x3D; options.hovering_class || undefined;
 		this.validateClassParameters();
 		
+		// private helper properties
 		this.isDragging &#x3D; false;
 		this.elementClone &#x3D; false;
 		this.mouseOffset &#x3D; {x:0, y:0};
@@ -167,7 +175,7 @@ class EZDnD_Draggable{
 			throw new Error(&quot;element must be contained within container.&quot;);
 		}
 		// Ensure anchor is within element
-		if(!this.element.contains(this.anchor)){
+		if(!this.element.contains(this.anchor) &amp;amp;&amp;amp; this.element !&#x3D;&#x3D; this.anchor){
 			throw new Error(&quot;anchor must be contained within element.&quot;);
 		}
 	}
@@ -202,6 +210,9 @@ class EZDnD_Draggable{
 		if(this.newElementPosition){
 			this.newElementPosition.ele.insertAdjacentElement(this.newElementPosition.pos, this.element);
 			if(this.placeholder) this.placeholder.remove();
+			if(this.hovering_class){
+				this.newElementPosition.container.classList.remove(this.hovering_class);
+			}
 		}
 		
 		document.body.style.cursor &#x3D; this.bodyCursor;
@@ -240,9 +251,9 @@ class EZDnD_Draggable{
 	 * Get the new position of the dragging element.
 	 * @ignore
 	 */
-	getNewElementPosition(){
+	getNewElementPosition(e){
 		var container &#x3D; null;
-		var eleCenter &#x3D; this.calculateElementCenterPos(this.elementClone);
+		var mousePos &#x3D; {x: e.pageX, y: e.pageY};
 		
 		this.containers.forEach(c&#x3D;&gt;{
 			var {top, left, right, bottom} &#x3D; c.getBoundingClientRect();
@@ -251,8 +262,8 @@ class EZDnD_Draggable{
 			left +&#x3D; scrollX;
 			right +&#x3D; scrollX;
 			
-			const isVerticallyIncontainer &#x3D; eleCenter.x &gt;&#x3D; left &amp;amp;&amp;amp; eleCenter.x &amp;lt;&#x3D; right;
-			const isHorizontallyInContainer &#x3D; eleCenter.y &gt;&#x3D; top &amp;amp;&amp;amp; eleCenter.y &amp;lt;&#x3D; bottom;
+			const isVerticallyIncontainer &#x3D; mousePos.x &gt;&#x3D; left &amp;amp;&amp;amp; mousePos.x &amp;lt;&#x3D; right;
+			const isHorizontallyInContainer &#x3D; mousePos.y &gt;&#x3D; top &amp;amp;&amp;amp; mousePos.y &amp;lt;&#x3D; bottom;
 			if(isVerticallyIncontainer &amp;amp;&amp;amp; isHorizontallyInContainer){
 				container &#x3D; c;
 			}
@@ -263,7 +274,7 @@ class EZDnD_Draggable{
 		
 		// if there are no children
 		if(!children.length){
-			return {pos: &#x27;afterbegin&#x27;, ele: container};
+			return {pos: &#x27;afterbegin&#x27;, ele: container, container};
 		}
 		
 		// Get the closest element, it&#x27;s distance, and the position
@@ -272,14 +283,14 @@ class EZDnD_Draggable{
 		children.forEach(child&#x3D;&gt;{
 			var posit &#x3D; null;
 			var pos &#x3D; this.calculateElementCenterPos(child);
-			var d &#x3D; Math.hypot(pos.x-eleCenter.x, pos.y-eleCenter.y);
-			if(eleCenter.y &amp;lt; pos.y){
+			var d &#x3D; Math.hypot(pos.x-mousePos.x, pos.y-mousePos.y);
+			if(mousePos.y &amp;lt; pos.y){
 				// it&#x27;s above
 				posit &#x3D; &#x27;beforebegin&#x27;;
-			}else if(eleCenter.y &gt; pos.y){
+			}else if(mousePos.y &gt; pos.y){
 				// it&#x27;s below
 				posit &#x3D; &#x27;afterend&#x27;;
-			}else if(eleCenter.x &gt; pos.x){
+			}else if(mousePos.x &gt; pos.x){
 				// it&#x27;s to the right
 				posit &#x3D; &#x27;afterend&#x27;;
 			}else{
@@ -293,7 +304,7 @@ class EZDnD_Draggable{
 			}
 		});
 		
-		return {pos: position, ele: element};
+		return {pos: position, ele: element, container};
 	}
 	
 	/**
@@ -325,7 +336,23 @@ class EZDnD_Draggable{
 		this.elementClone.style.top &#x3D; this.currentAbsPos.y+&quot;px&quot;;
 		this.elementClone.style.left &#x3D; this.currentAbsPos.x+&quot;px&quot;;
 		
+		var prev_container &#x3D; this.newElementPosition ? this.newElementPosition.container : undefined;
+		
 		this.newElementPosition &#x3D; this.getNewElementPosition(e);
+		
+		if(prev_container){
+			if(this.newElementPosition){
+				if(this.newElementPosition.container !&#x3D;&#x3D; prev_container){
+					prev_container.classList.remove(this.hovering_class);
+				}
+			}else{
+				prev_container.classList.remove(this.hovering_class);
+			}
+		}
+		
+		if(this.newElementPosition &amp;amp;&amp;amp; this.hovering_class){
+			this.newElementPosition.container.classList.add(this.hovering_class);
+		}
 		if(this.placeholder){
 			if(this.newElementPosition){
 				this.newElementPosition.ele.insertAdjacentElement(this.newElementPosition.pos, this.placeholder);
@@ -399,6 +426,13 @@ class EZDnD_Draggable{
 		clone.style.top &#x3D; this.currentAbsPos.y+&quot;px&quot;;
 		clone.style.left &#x3D; this.currentAbsPos.x+&quot;px&quot;;
 		
+		var bb &#x3D; this.element.getBoundingClientRect();
+		clone.style.width &#x3D; bb.width+&#x27;px&#x27;;
+		
+		if(this.dragging_class){
+			clone.classList.add(this.dragging_class);
+		}
+		
 		return clone;
 	}
 	
@@ -412,18 +446,25 @@ class EZDnD_Group{
 	
 	/**
 	 * Greate a group of draggable elements
-	 * @param {String} element_selectors - CSS Selector representing all draggable elements
-	 * @param {String} anchor_selectors - CSS Selector representing handles in each of the draggable elements
-	 * @param {String} container_selectors - CSS Selector representing all areas in which elements may be dropped
-	 * @param {HTMLElement|null} placeholder - If provided, serves as a placeholder to show where a dropped element will land.
+	 * @param {String} [options.element_selectors] - CSS Selector representing all draggable elements.
+	 * @param {String} [options.anchor_selectors] - CSS Selector representing handles in each of the draggable elements. If none provided the entire element becomes a handle.
+	 * @param {String} [options.container_selectors] - CSS Selector representing all areas in which elements may be dropped. If not provided, each element is movable only within their immediate ancestor.
+	 * @param {HTMLElement} [options.placeholder] - If provided, serves as a placeholder to show where a dropped element will land.
+	 * @param {String} [options.dragging_class] - If provided this class will be added to any elements as they are being dragged.
+	 * @param {String} [options.hovering_class] - If provided this class will be added to any containers as they are being hovered over with a dragged element.
 	 * @returns {EZDnD_Group}
 	 */
-	constructor(element_selectors, anchor_selectors, container_selectors, placeholder&#x3D;null){
+	constructor(options){	
 		this.draggables &#x3D; [];
-		const containers &#x3D; [...document.querySelectorAll(container_selectors)];
-		[...document.querySelectorAll(element_selectors)].forEach(element&#x3D;&gt;{
-			const anchor &#x3D; element.querySelector(anchor_selectors);
-			this.draggables.push(new EZDnD_Draggable(element, anchor, containers, placeholder));
+		const containers &#x3D; options.container_selectors ? [...document.querySelectorAll(options.container_selectors)] : undefined;
+		var dragging_class &#x3D; options.dragging_class || undefined;
+		var hovering_class &#x3D; options.hovering_class || undefined;
+		[...document.querySelectorAll(options.element_selectors)].forEach(element&#x3D;&gt;{
+			const anchor &#x3D; options.anchor_selectors ? element.querySelector(options.anchor_selectors) : undefined;
+			const placeholder &#x3D; options.placeholder || undefined;
+			this.draggables.push(new EZDnD_Draggable({
+				element, anchor, containers, placeholder, dragging_class, hovering_class
+			}));
 		});
 	}
 	
@@ -444,7 +485,7 @@ class EZDnD_Group{
 	}
 	
 	/**
-	 * Re-binds all events after an instance has been unbound.;
+	 * Re-binds all events after an instance has been unbound.
 	 * @returns {undefined}
 	 */
 	bind(){

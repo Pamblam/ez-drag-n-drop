@@ -6,67 +6,90 @@
 		<link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css'>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 		<title>Drag n' Drop Example</title>
+		
+		<style>
+			
+			.outlined-container{
+				min-height: 2em;
+				border: 2px dashed black;
+			}
+			
+			.currently_dragging{
+				background: rgba(47, 208, 61, 0.21);
+			}
+			
+			.currently_hovering{
+				background: rgba(122, 47, 208, 0.21);
+			}
+			
+		</style>
+		
 	</head>
 	<body>
 
 		<div class="container">
 			<br>
 			<h1>Drag n' Drop Website Demo</h1>
+			<div>
+				<a href="../examples/">Examples</a> | <a href="../docs/">Docs</a><br><br>
+			</div>
+			
 			<div class='alert alert-info'>
 				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="checkbox" id="togglednd" value="">
-					<label class="form-check-label" for="togglednd">Check to turn on drag n' drop to rearrange items on webpage. Drag the <i class="fas fa-dot-circle"></i> icons to rearrange items.</label>
+					<input class="form-check-input" type="checkbox" id="togglednd" value="" checked="">
+					<label class="form-check-label" for="togglednd">Check to turn on drag n' drop to rearrange items on webpage.</label>
 				</div>
+				<div id='instructions'><hr> Drag the headers to rearrange items. Your chosen order is saved and persisted via localStorage. <a href='#' id='resetbtn'>(Click here to reset)</a></div>
 			</div>
 			<hr><!-- comment -->
 			<div class='row'>
-				<div class='col-8'>
-					<section>
-						<h3><i class="fas fa-dot-circle"></i> Prism vaporware, fam banjo</h3>
+				<div class='col-8' id='container-1'>
+					<section id='section-1'>
+						<h3>Prism vaporware, fam banjo</h3>
 						<p>Prism vaporware, fam banjo glossier jean shorts williamsburg salvia poke freegan tote bag drinking vinegar. Knausgaard 3 wolf moon hella actually irony shoreditch williamsburg polaroid dreamcatcher letterpress, green juice brunch pitchfork yr. Venmo williamsburg woke iPhone, health goth poutine chillwave shabby chic cray photo booth glossier trust fund. Echo park lyft kale chips marfa.</p>
 					</section>
-					<section>
-						<h3><i class="fas fa-dot-circle"></i> Readymade pork belly taiyaki shaman</h3>
+					<section id='section-2'>
+						<h3>Readymade pork belly taiyaki shaman</h3>
 						<p>Readymade pork belly taiyaki shaman everyday carry kogi DIY lumbersexual ethical dreamcatcher trust fund shabby chic letterpress glossier. Sustainable venmo before they sold out, iceland semiotics vice art party pork belly bicycle rights hashtag. Small batch asymmetrical bitters kinfolk. Offal flexitarian lomo umami, polaroid brunch single-origin coffee biodiesel fashion axe edison bulb selfies. Helvetica vaporware vinyl jean shorts. Edison bulb lumbersexual kale chips, chicharrones viral DIY hexagon tacos. Hella ugh bespoke direct trade snackwave offal irony.</p>
 					</section>
 				</div>
-				<div class='col-4'>
-					<section>
-						<h3><i class="fas fa-dot-circle"></i> I'm baby stumptown man bun</h3>
+				<div class='col-4' id='container-2'>
+					<section id='section-3'>
+						<h3>I'm baby stumptown man bun</h3>
 						<p>I'm baby stumptown man bun pop-up echo park gochujang. Helvetica adaptogen try-hard synth hoodie, iPhone bicycle rights polaroid tumeric mustache copper mug fanny pack cloud bread man bun. Normcore echo park pinterest four dollar toast bicycle rights neutra bushwick twee af mlkshk marfa chillwave gastropub. Cred microdosing truffaut pinterest literally poutine chicharrones selfies succulents kinfolk tilde pug hexagon yr.</p>
 					</section>
 				</div>
 			</div>
 			<div class='row'>
-				<div class='col'>
-					<section>
-						<h3><i class="fas fa-dot-circle"></i> Cloud bread heirloom gochujang meditation</h3>
+				<div class='col' id='container-3'>
+					<section id='section-4'>
+						<h3>Cloud bread heirloom gochujang meditation</h3>
 						<p>Cloud bread heirloom gochujang meditation. Synth master cleanse copper mug, pork belly jianbing marfa dreamcatcher taxidermy salvia. Lumbersexual air plant yr, unicorn photo booth scenester post-ironic shaman. Chillwave prism lo-fi distillery chartreuse biodiesel intelligentsia coloring book cornhole roof party banh mi. Normcore direct trade woke jianbing. Waistcoat la croix vice, butcher godard semiotics authentic chia franzen gluten-free. VHS blog vegan skateboard, salvia health goth microdosing kombucha glossier ugh hella tousled.</p>
 					</section>
 				</div>
 			</div>
 			<div class='row'>
-				<div class='col-4'>
-					<section>
-						<h3><i class="fas fa-dot-circle"></i> I'm baby fingerstache</h3>
+				<div class='col-4' id='container-4'>
+					<section id='section-5'>
+						<h3>I'm baby fingerstache</h3>
 						<p>I'm baby fingerstache austin freegan stumptown +1 four loko. Cornhole fanny pack yr pickled cloud bread organic, photo booth affogato farm-to-table sartorial hella iceland occupy listicle vape. Man braid cliche swag woke portland. PBR&B wolf woke kickstarter flannel food truck. Coloring book poutine taiyaki, church-key irony chia polaroid semiotics activated charcoal hella fashion axe. Edison bulb godard portland, +1 green juice knausgaard pickled af direct trade gentrify whatever pork belly air plant bicycle rights shabby chic. Palo santo whatever poke vinyl tousled tumeric air plant jianbing PBR&B keytar.</p>
 					</section>
 				</div>
-				<div class='col-8'>
-					<section>
-						<h3><i class="fas fa-dot-circle"></i> Kale chips tumeric wolf</h3>
+				<div class='col-8' id='container-5'>
+					<section id='section-6'>
+						<h3>Kale chips tumeric wolf</h3>
 						<p>Kale chips tumeric wolf letterpress meh. Intelligentsia asymmetrical flannel, gentrify subway tile cronut church-key VHS snackwave trust fund readymade selvage hell of. Vexillologist pork belly meditation polaroid organic flannel, intelligentsia small batch skateboard chartreuse fingerstache health goth vaporware raclette listicle. Aesthetic pok pok tousled, literally everyday carry +1 salvia. Knausgaard art party ennui pinterest microdosing cronut vice poke deep v.</p>
 					</section>
-					<section>
-						<h3><i class="fas fa-dot-circle"></i> Farm-to-table narwhal portland fixie affogato</h3>
+					<section id='section-7'>
+						<h3>Farm-to-table narwhal portland fixie affogato</h3>
 						<p>Farm-to-table narwhal portland fixie affogato, plaid lo-fi mustache brooklyn neutra. Prism plaid brunch before they sold out enamel pin subway tile, wolf slow-carb chambray narwhal. Normcore wayfarers cray meditation brooklyn, shabby chic tacos sriracha health goth pork belly hexagon. Portland activated charcoal ugh plaid succulents letterpress chillwave. Master cleanse deep v mumblecore man bun, echo park aesthetic keffiyeh tumblr craft beer four loko poke shabby chic. Banh mi keffiyeh adaptogen, lomo jean shorts semiotics pickled XOXO raclette pork belly chambray paleo typewriter.</p>
 					</section>
 				</div>
 			</div>
 			<div class='row'>
-				<div class='col'>
-					<section>
-						<h3><i class="fas fa-dot-circle"></i> Flexitarian lumbersexual copper mug</h3>
+				<div class='col' id='container-6'>
+					<section id='section-8'>
+						<h3>Flexitarian lumbersexual copper mug</h3>
 						<p>Flexitarian lumbersexual copper mug banh mi selfies photo booth pour-over tilde normcore narwhal. Thundercats gastropub sustainable, lomo narwhal cloud bread pinterest organic street art lyft. Cold-pressed etsy gluten-free affogato enamel pin organic. Pug glossier blue bottle, pok pok flannel tote bag af. Kale chips PBR&B cronut cold-pressed.</p>
 					</section>
 				</div>
@@ -85,15 +108,18 @@
 			var container_selectors = 'div[class*="col"]';
 			var placeholder = '<div style="border-bottom: 1px solid red; color: red;">&rarr;</div>';
 			
-			var dnd = new EZDnD_Group(
-				draggable_selector, 
-				anchor_selector, 
-				container_selectors, 
-				placeholder
-			);
+			var dnd = new EZDnD_Group({
+				element_selectors: draggable_selector, 
+				anchor_selectors: anchor_selector, 
+				container_selectors: container_selectors, 
+				placeholder: placeholder,
+				dragging_class: 'currently_dragging',
+				hovering_class: 'currently_hovering'
+			});
 	
 			disableDnD();
 			
+			document.getElementById('togglednd').checked = false;
 			document.getElementById('togglednd').addEventListener('input', function(){
 				if(this.checked){
 					enableDnD();
@@ -103,25 +129,64 @@
 			});
 		
 			function enableDnD(){
-				document.querySelectorAll('.fas').forEach(anchor=>{
-					anchor.style.display = null;
+				document.getElementById('instructions').style.display = null;
+				document.querySelectorAll(container_selectors).forEach(container=>{
+					container.classList.add('outlined-container');
 				});
 				dnd.bind();
 			}
 			
 			function disableDnD(){
-				document.querySelectorAll('.fas').forEach(anchor=>{
-					anchor.style.display = 'none';
+				document.getElementById('instructions').style.display = 'none';
+				document.querySelectorAll(container_selectors).forEach(container=>{
+					container.classList.remove('outlined-container');
 				});
 				dnd.unbind();
 			}
 		
-//			document.addEventListener('dnd-completed', function(e){
-//				var label = e.target.parentElement.getAttribute('data-label');
-//				var artist = e.target.innerText.trim();
-//				alert(`${artist} labelled as ${label}.`);
-//			});
-		
+			////////////////////////////////////////////////////////////////////
+			// Lets add some code to make choices persistent
+			////////////////////////////////////////////////////////////////////
+			
+			function getCurrentOrder(){
+				var order = {};
+				document.querySelectorAll("div[id^='container-']").forEach(container=>{
+					order[container.id] = [];
+					container.querySelectorAll("section[id^='section-']").forEach(section=>{
+						order[container.id].push(section.id);
+					});
+				});
+				return order;
+			}
+			
+			function setCurrentOrder(order){
+				Object.keys(order).forEach(container_id=>{
+					var container = document.getElementById(container_id);
+					order[container_id].forEach(section_id=>{
+						var section = document.getElementById(section_id);
+						container.insertAdjacentElement('beforeend', section);
+					});
+				});
+			}
+			
+			var order_settings = localStorage.getItem('order_settings');
+			if(order_settings){
+				order_settings = JSON.parse(order_settings);
+				setCurrentOrder(order_settings);
+			}
+			
+			document.addEventListener('dnd-completed', function(e){
+				order_settings = getCurrentOrder();
+				localStorage.setItem('order_settings', JSON.stringify(order_settings));
+			});
+			
+			document.getElementById('resetbtn').addEventListener('click', function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				localStorage.setItem('order_settings', '');
+				location.reload();
+			});
+			
 		</script>
 	</body>
 </html>

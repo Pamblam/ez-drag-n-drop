@@ -24,6 +24,9 @@
 			<br><br>
 			
 			<h1>Drag n' Drop Demo</h1>
+			<div>
+				<a href="../examples/">Examples</a> | <a href="../docs/">Docs</a><br><br>
+			</div>
 			
 			<p>Use the <i class="fas fa-dot-circle"></i> icon to grab artists and drag them to the different categories.</p>
 			
@@ -90,7 +93,12 @@
 		
 		<script>		
 		
-			var dnd = new EZDnD_Group('.draggable', '.fas', '.dnd-container', '<div>&rarr;</div>');
+			var dnd = new EZDnD_Group({
+				element_selectors: '.draggable', 
+				anchor_selectors: '.fas', 
+				container_selectors: '.dnd-container', 
+				placeholder: '<div>&rarr;</div>'
+			});
 		
 			document.addEventListener('dnd-completed', function(e){
 				var label = e.target.parentElement.getAttribute('data-label');

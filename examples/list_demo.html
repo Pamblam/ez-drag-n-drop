@@ -7,27 +7,72 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 		<title>Drag n' Drop Example</title>
 		
+		<style>
+			.draggable{
+				margin: .2em;
+			}
+			
+			.dnd-container{
+				border: 2px dashed black;
+				min-height: 1em;
+			}
+		</style>
+		
 	</head>
 	<body>
 		<div class="container">
 			<br><br>
 			
-			<h1>Drag n' Drop Demos</h1>
+			<h1>Drag n' Drop Demo</h1>
 			<div>
-				<a href="../docs/">Docs</a><br><br>
+				<a href="../examples/">Examples</a> | <a href="../docs/">Docs</a><br><br>
 			</div>
 			
-			<ul>
-				<li><a href='simple_demo.html'>Simple Demo</a></li>
-				<li><a href='website_demo.html'>Website Demo</a></li>
-				<li><a href='list_demo.html'>List Demo</a></li>
-			</ul>
+			<p>Drag to re-order items in the list.</p>
 			
+			<h3>Favorite Cheeses</h3>
+			<ol id='mylist'>
+				<li>Goat Cheese</li>
+				<li>Brie</li>
+				<li>Gouda</li>
+				<li>Cheddar</li>
+				<li>Mozzarella</li>
+				<li>Feta</li>
+			</ol>
+			
+			<code id="event_display" style='display:none;'></code>
 		</div>
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		<script src="../ez-drag-n-drop.js"></script>
 		
+		<script>		
+			
+			var dnd = new EZDnD_Group({
+				element_selectors: '#mylist li',
+				placeholder: '<li>&larr;</li>'
+			});
+			
+			var events = [
+				'dnd-started',
+				'dnd-dragging',
+				'dnd-completed',
+				'dnd-canceled'
+			];
+			
+			var ed = document.getElementById('event_display'), timer = null;
+			events.forEach(event=>{
+				document.addEventListener(event, function(e){
+					if(timer) clearTimeout(timer);
+					ed.innerHTML = `<b>${event}</b> event fired.`;
+					ed.style.display = 'block';
+					timer = setTimeout(()=>{
+						ed.style.display = 'none';
+					}, 1000);
+				});
+			});
+		</script>
 	</body>
 </html>
 
