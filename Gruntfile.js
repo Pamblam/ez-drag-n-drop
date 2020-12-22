@@ -23,7 +23,7 @@ module.exports = function(grunt) {
 		'string-replace': {
 			source: {
 				files: {
-					"canvas-layers.js": "ez-drag-n-drop.js"
+					"ez-drag-n-drop.js": "ez-drag-n-drop.js"
 				},
 				options: {
 					replacements: [{
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('jsdoc', 'Generate docs', function () {
 		const {exec} = require('child_process');
 		var done = this.async();
-		exec('./node_modules/.bin/jsdoc --template ./node_modules/\@sugarcrm/jsdoc-baseline/  --destination ./docs canvas-layers.js', (err, stdout, stderr) => {
+		exec('./node_modules/.bin/jsdoc --template ./node_modules/\@sugarcrm/jsdoc-baseline/  --destination ./docs ez-drag-n-drop.js', (err, stdout, stderr) => {
 			if (err) {
 				console.log('Unable to generate docs.');
 				console.error(err);

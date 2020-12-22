@@ -1,5 +1,5 @@
 /**
- * ez-drag-n-drop - v0.0.5
+ * ez-drag-n-drop - v0.0.6
  * Simple plugin to allow users to drag and drop to rearrange elements in the DOM.
  * @author Pamblam
  * @website 
@@ -410,6 +410,14 @@ class EZDnD_Group{
 	 */
 	unbind(){
 		this.draggables.forEach(draggable=>draggable.unbind());
+	}
+	
+	/**
+	 * Re-binds all events after an instance has been unbound.;
+	 * @returns {undefined}
+	 */
+	bind(){
+		this.draggables.forEach(draggable=>draggable.bind());
 	}
 	
 }

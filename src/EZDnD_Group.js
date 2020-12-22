@@ -38,5 +38,13 @@ class EZDnD_Group{
 		this.draggables.forEach(draggable=>draggable.unbind());
 	}
 	
+	/**
+	 * Re-binds all events after an instance has been unbound.;
+	 * @returns {undefined}
+	 */
+	bind(){
+		this.draggables.forEach(draggable=>draggable.bind());
+	}
+	
 }
 

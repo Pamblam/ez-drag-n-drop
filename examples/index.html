@@ -23,82 +23,18 @@
 		<div class="container">
 			<br><br>
 			
-			<h1>Drag n' Drop Demo</h1>
+			<h1>Drag n' Drop Demos</h1>
 			
-			<p>Use the <i class="fas fa-dot-circle"></i> icon to grab artists and drag them to the different categories.</p>
-			
-			<div class="card">
-				<div class="card-header d-flex justify-content-between align-items-center">
-					Artists
-				</div>
-				<div class="card-body">
-					<div class="row dnd-container" data-label='Unlabeled'>
-						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Elvis</span>
-						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Bob Dylan</span>
-						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Eminem</span>
-						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Elton John</span>
-						<span class="badge badge-primary draggable"><i class="fas fa-dot-circle"></i> Modanna</span>
-					</div>
-				</div>
-			</div>
-			<br><Br>
-			<div class='row'>
-				<div class='col'>
-					<div class="card">
-						<div class="card-header d-flex justify-content-between align-items-center">
-							Good Music
-						</div>
-						<div class="card-body">
-							<div class="row container dnd-container" data-label='Good Music'>
-								
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class='col'>
-					<div class="card">
-						<div class="card-header d-flex justify-content-between align-items-center">
-							Bad Music
-						</div>
-						<div class="card-body">
-							<div class="row container dnd-container" data-label='Bad Music'>
-								
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class='col'>
-					<div class="card">
-						<div class="card-header d-flex justify-content-between align-items-center">
-							Terrible Music
-						</div>
-						<div class="card-body">
-							<div class="row container dnd-container" data-label='Terrible Music'>
-								
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			
+			<ul>
+				<li><a href='simple_demo.html'>Simple Demo</a></li>
+				<li><a href='website_demo.html'>Website Demo</a></li>
+			</ul>
 			
 		</div>
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-		<script src="../ez-drag-n-drop.js"></script>
 		
-		<script>		
-		
-			var dnd = new EZDnD_Group('.draggable', '.fas', '.dnd-container', '<div>&rarr;</div>');
-		
-			document.addEventListener('dnd-completed', function(e){
-				var label = e.target.parentElement.getAttribute('data-label');
-				var artist = e.target.innerText.trim();
-				alert(`${artist} labelled as ${label}.`);
-			});
-		
-		</script>
 	</body>
 </html>
 
