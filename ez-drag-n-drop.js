@@ -1,5 +1,5 @@
 /**
- * ez-drag-n-drop - v1.0.19
+ * ez-drag-n-drop - v1.0.20
  * Simple plugin to allow users to drag and drop to rearrange elements in the DOM.
  * @author Pamblam
  * @website 
@@ -347,43 +347,11 @@ class EZDnD_Draggable{
 	 * @ignore
 	 */
 	cloneElement(){
-		const getRealStyle = (element, style) => {
-			var computedStyle = typeof element.currentStyle === 'undefined' ? 
-				document.defaultView.getComputedStyle(element, null) :
-				element.currentStyle ;
-			return style ? computedStyle[style] : computedStyle;
-		};
 		
-		const copyComputedStyle = (src, dest) => {
-			var s = getRealStyle(src);
-			for (var i in s) {
-				if (typeof i === "string" && i !== "cssText" && !/\d/.test(i)) {
-					try {
-						dest.style[i] = s[i];
-						// `fontSize` comes before `font` If `font` is empty, `fontSize` gets
-						// overwritten.  So make sure to reset this property. (hackyhackhack)
-						// Other properties may need similar treatment
-						if (i == "font") {
-							dest.style.fontSize = s.fontSize;
-						}
-					} catch (e) {}
-				}
-			}
-		};
+		var clone = this.deepCloneNode(this.element);
 		
-		var clone = this.element.cloneNode(true);
+		console.log(clone);
 		document.body.append(clone);
-		
-		copyComputedStyle(this.element, clone);
-		
-		const srcElements = this.element.getElementsByTagName('*');
-		const dstElements = clone.getElementsByTagName('*');
-		
-		for (let i = srcElements.length; i--;) {
-			const srcElement = srcElements[i];
-			const dstElement = dstElements[i];
-			copyComputedStyle(srcElement, dstElement);
-		}
 		
 		var pos = this.element.getBoundingClientRect();
 		this.currentAbsPos = {
@@ -395,13 +363,62 @@ class EZDnD_Draggable{
 		clone.style.top = this.currentAbsPos.y+"px";
 		clone.style.left = this.currentAbsPos.x+"px";
 		
-		var bb = this.element.getBoundingClientRect();
-		clone.style.width = bb.width+'px';
-		
 		if(this.dragging_class){
 			clone.classList.add(this.dragging_class);
 		}
 		
+		return clone;
+	}
+	
+	/**
+	 * Recursively clone the given HTMLElement, it's computed styles, 
+	 * attributes, and children. Does not copy IDs.
+	 * @param {HTMLElement} elem
+	 * @returns {Element|Boolean}
+	 */
+	deepCloneNode(elem) {
+		if (!elem instanceof HTMLElement) return false;
+		var clone = document.createElement(elem.tagName);
+
+		// Copy styles
+		var styles = getComputedStyle(elem);
+		for (let i = styles.length; i--; ) {
+			let prop = styles[i].split('-').map((w, i) => {
+				w = w.toLowerCase();
+				if (i > 0) w = w.substr(0, 1).toUpperCase() + w.substr(1);
+				return w;
+			}).join('');
+			let val = styles[prop];
+			clone.style[prop] = val;
+		}
+
+		// Copy attributes (except ID)
+		var attributes = elem.attributes;
+		for (let i = attributes.length; i--; ) {
+			let prop = attributes[i].name;
+			let val = attributes[i].value;
+			if (prop.toLowerCase() === 'id') continue;
+			clone.setAttribute(prop, val);
+		}
+
+		// Copy child nodes
+		var children = elem.childNodes;
+		for (let i = children.length; i--; ) {
+			let node = children[i];
+			let clonedChild;
+			if (node.nodeType === 1) {
+				// It's an element
+				clonedChild = this.deepCloneNode(node);
+			} else if (node.nodeType === 3) {
+				// It's text
+				clonedChild = document.createTextNode(node.textContent);
+			}
+			if (clonedChild) clone.prepend(clonedChild);
+		}
+
+		// Copy Values
+		if (elem.value) clone.value = elem.value;
+
 		return clone;
 	}
 	
